@@ -159,7 +159,6 @@ if(mydb.is_connected()):
             cursor.execute("CREATE DATABASE vrboHotelData")
             print("Database created")
             isDatabaseCreated=1
-        #cursor.execute("CREATE DATABASE abc")
         #print("Database created")
         mySql_Create_Table_Query = """CREATE TABLE vrbohoteldata (
                                          Id int(11) NOT NULL,
