@@ -1,5 +1,8 @@
 from html.parser import HTMLParser
 import urllib.request
+import uuid
+import re
+from vrboDatabase import *
 
 # Import HTML from a URL
 location = "https://www.vrbo.com/vacation-rentals/usa/maryland/eastern-shore/ocean-city"
@@ -124,22 +127,36 @@ WebParser.results = []
 priceList = find(content=html, query=[
     'span', ('class', 'CommonRatioCard__price__amount'), 'text'])
 WebParser.results = []
-print(location[38:41]+" "+location[42:50])
+location_name=(location[38:41]+" "+location[42:50])
 # Extracting Sleeping rooms , Bedrooms, bathRooms from facilities list
 sleepingRooms = []
 bedRooms = []
 bathRooms = []
+
 for i in range(0, len(roomDescription)):
+    room_quantity=re.findall("\d+", roomDescription[i])
+    print(room_quantity)
+    sleepingRooms.append(room_quantity[0])
+    bedRooms.append(room_quantity[1])
+    bathRooms.append(room_quantity[2])
+    print(roomDescription[i])
     allFacilities = roomDescription[i]
     print(allFacilities)
     # Slice sleeping, bedroom, & bathroom
-    sleepingRooms.append(allFacilities[7:9])
-    bedRooms.append(allFacilities[11:13])
-    bathRooms.append(allFacilities[24:26])
+    #sleepingRooms.append(allFacilities[7:9])
+    #bedRooms.append(allFacilities[11:13])
+    #bathRooms.append(allFacilities[22:26])
 print(hotelsList[0])
 
-for i in range(0, len(sleepingRooms)):
+for i in range(0, len(roomDescription)):
     print("slepping room : "+sleepingRooms[i]+" Bedrooms:  "+bedRooms[i]+" Bathrooms : "+bathRooms[i]);
+
+# Function that return a unique id
+
+
+def get_unique_id() :
+    u_id = uuid.uuid1()
+    return (u_id)
 
 # Storing data in database
 import mysql.connector
@@ -147,38 +164,30 @@ import mysql.connector
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password=""
+  password="",
+  database="vrboDatabase"
 )
+# Insert Scraped Data into vrboDatabase
 isDatabaseCreated = 0
 if(mydb.is_connected()):
-    print("Connected with database successfully")
+    cursor = mydb.cursor()
     try:
-        cursor = mydb.cursor()
-        cursor.execute("SHOW DATABASES")
-        if isDatabaseCreated == 0:
-            cursor.execute("CREATE DATABASE vrboHotelData")
-            print("Database created")
-            isDatabaseCreated=1
-        #print("Database created")
-        mySql_Create_Table_Query = """CREATE TABLE vrbohoteldata (
-                                         Id int(11) NOT NULL,
-                                         Name varchar(250) NOT NULL,
-                                         Price float NOT NULL,
-                                         Purchase_date Date NOT NULL,
-                                         PRIMARY KEY (Id)) """
-        print("Hotel Data Table created successfully ")
-        # insert
-        mySql_insert_query1 = """INSERT INTO vrbohoteldata (Id, Name, Price, Purchase_date) 
-                                 VALUES 
-                                 (15, 'Lenovo ThinkPad P71', 6459, '2019-08-14') """
-
-        cursor.execute(mySql_insert_query1)
-        mydb.commit()
-        print(cursor.rowcount, "Record inserted successfully into Laptop table")
+        for i in range(0, len(roomDescription)):
+            mySql_insert_query = """INSERT IGNORE INTO vrbo_hotel_info_table (Id, Location, Hotel_Name, Sleeping, Bedroom, Bathroom) 
+                                               VALUES 
+                                               (%s,%s,%s,%s,%s,%s) """
+            # call get_unique_id function to get unique id
+            unique_id = str(get_unique_id())
+            print(type(unique_id))
+            table_values = (unique_id, location_name, hotelsList[i], sleepingRooms[i], bedRooms[i], bathRooms[i])
+            cursor.execute(mySql_insert_query, table_values)
+            mydb.commit()
+            print("Data Inserted Successfully")
 
     except mysql.connector.Error as error:
-        print("Failed to create table in MySQL: {}".format(error))
+        print("Failed to insert record into Laptop table {}".format(error))
     finally:
         if mydb.is_connected():
             mydb.close()
             print("MySQL connection is closed")
+

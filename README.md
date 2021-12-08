@@ -5,6 +5,8 @@ This is a python script that scraps the data of vacation rent service named as v
 # Project Features
 * Scrap properties like hotel name, sleeping, bedrooms, bathrooms ,locations etc.
 * Stores the above properties into mysql database
+* Prevented inserting duplicate hotel name into the database
+
 
 
 ## How the run the scripts 
@@ -17,11 +19,12 @@ To install mysql connector run -
 sudo apt-get install python3-mysql.connector
 * For me I have installed used Xampp server
 ```
-# Database table design
-| Location   | Hotel Name | Sleeping | Bedrooms | Bathroom |
-|------------|------------|----------|----------|----------|
-| usa        | str        | 6        | 4        | 3        |
-| florida    | str1       | 5        | 3        | 2        |
-| ochen city | str3       | 4        | 2        | 2        |
-| user4      | x4         | y4       |          |          |
-| user5      | x5         | y5       |          |          |
+# Database Table Structure
+| ID             | Location       | Hotel_Name    | Sleeping  | Bedroom  | Bathroom |
+|----------------|----------------|---------------|-----------|----------|----------|
+| uhg87-888-a7.  | Usa-Maryland   | 1Hotel One    | 10        | 3        | 2        |
+| uhg87-888-a8.  | Usa-Maryland   | 6 Hotel Two   | 6         | 2        | 3        |
+| uhg87-888-a9.  | Usa-Maryland   | 8 Hotel Three | 8         | 2        | 4        |
+| uhg87-888-a10. | Usa-Maryland   | 5 Hotel Four  | 7         | 1        | 2        |
+| uhg87-888-a11. | Usa-Maryland   | 7 Hotel Five  | 5         | 5        | 3        |
+ | uhg87-88-a11.  | Usa-Maryland   |   Hotel Six   | 2         | 4        | 1        |
