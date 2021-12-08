@@ -1,3 +1,8 @@
+#################
+# This script creates a database table named as vrboDatabase
+# Author : Jaminur Rashid
+# Data   : 8-12-2021
+##################
 import mysql.connector
 mydb = mysql.connector.connect(
   host="localhost",
@@ -23,7 +28,6 @@ try:
                                  PRIMARY KEY (Hotel_Name)) """
     print("Vrbo_Hotel_Table Created Successfully")
     result = cursor.execute(mySql_Create_Table_Query)
-    print("Laptop Table created successfully ")
 except mysql.connector.Error as error:
     print("Failed to create table in MySQL: {}".format(error))
 finally:
