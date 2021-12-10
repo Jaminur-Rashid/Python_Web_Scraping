@@ -136,18 +136,33 @@ priceList = find(content=html, query=[
 WebParser.results = []
 location_name=(location[38:41]+" "+location[42:50])
 
-
 # Extracting Sleeping rooms , Bedrooms, bathRooms from facilities list
 sleepingRooms = []
 bedRooms = []
 bathRooms = []
-
+print("Room Description : ")
 for i in range(0, len(roomDescription)):
     room_quantity = re.findall("\d+", roomDescription[i]) #extracts only number from string
     # store extracted rooms information into separate list
-    sleepingRooms.append(room_quantity[0])
-    bedRooms.append(room_quantity[1])
-    bathRooms.append(room_quantity[2])
+    print(room_quantity)
+    room_quantity_length=len(room_quantity)
+    # Handle no bathroom corner case
+    if room_quantity_length == 2:
+        sleepingRooms.append(room_quantity[0])
+        bedRooms.append(room_quantity[1])
+        bathRooms.append("No Bathroom")
+    elif room_quantity_length == 1:
+        sleepingRooms.append(room_quantity[0])
+        bedRooms.append("No Bedroom")
+        bathRooms.append("No Bathroom")
+    elif room_quantity_length == 0:
+        sleepingRooms.append("No Sleeping")
+        bedRooms.append("No Bedroom")
+        bathRooms.append("No Bathroom")
+    else:
+        sleepingRooms.append(room_quantity[0])
+        bedRooms.append(room_quantity[1])
+        bathRooms.append(room_quantity[2])
 # show extracted data
 for i in range(0, len(roomDescription)):
     if i == 0:
@@ -184,12 +199,12 @@ if(mydb.is_connected()):
     cursor = mydb.cursor()
     try:
         for i in range(0, len(roomDescription)):
-            mySql_insert_query = """INSERT IGNORE INTO vrbo_hotel_info_table (Id, Location, Hotel_Name, Sleeping, Bedroom, Bathroom) 
+            mySql_insert_query = """INSERT IGNORE INTO vrbo_hotel_info_table (Id, Location, Hotel_Name, Sleeping, Bedroom, Bathroom,Price) 
                                                VALUES 
-                                               (%s,%s,%s,%s,%s,%s) """
+                                               (%s,%s,%s,%s,%s,%s,%s) """
             # call get_unique_id function to get unique id
             unique_id = str(get_unique_id())
-            table_values = (unique_id, location_name, "Check_Hotel", sleepingRooms[i], bedRooms[i], bathRooms[i])
+            table_values = (unique_id, location_name, hotelsList[i], sleepingRooms[i], bedRooms[i], bathRooms[i],priceList[i])
             cursor.execute(mySql_insert_query, table_values)
             mydb.commit()
         print("Data Inserted Successfully")

@@ -1,5 +1,6 @@
 #################
-# This script creates a database table named as vrboDatabase
+# This script creates a database table
+# named as vrbo_hotel_info_table in the database
 # Author : Jaminur Rashid
 # Data   : 8-12-2021
 ##################
@@ -17,7 +18,7 @@ cursor = mydb.cursor()
 print("Ok")
 try:
     #cursor.execute("CREATE DATABASE vrboDatabase")
-    print("vrbo Database Created")
+    #print("vrbo Database Created")
     mySql_Create_Table_Query = """CREATE TABLE vrbo_hotel_info_table ( 
                                  Id varchar(100) NOT NULL,
                                  Location varchar(100) NOT NULL,
@@ -25,6 +26,7 @@ try:
                                  Sleeping varchar(20) NOT NULL,
                                  Bedroom varchar(20) NOT NULL,
                                  Bathroom varchar(20) NOT NULL,
+                                 Price varchar(20) NOT NULL,
                                  PRIMARY KEY (Hotel_Name)) """
     print("Vrbo_Hotel_Table Created Successfully")
     result = cursor.execute(mySql_Create_Table_Query)
